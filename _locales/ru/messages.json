@@ -1,0 +1,112 @@
+{
+  "copy_link_title": {
+    "message": "Копировать заголовок ссылки"
+  },
+  "cancel": {
+    "message": "Отмена"
+  },
+  "ok": {
+    "message": "OK"
+  },
+  "content_msg_tags_copied": {
+    "message": "Теги скопированы как ",
+    "description": "Теги скопированы как <profile_name>"
+  },
+  "content_msg_nothing_copied": {
+    "message": "Нечего копировать как ",
+    "description": "Нечего копировать как <profile_name>"
+  },
+  "settings_title": {
+    "message": "Tag copier - настройки",
+    "description": "Title of settings page"
+  },
+  "settings_chooser":{
+    "message": "Выберите новую комбинацию клавиш"
+  },
+  "settings_tag_format": {
+    "message": "Формат тегов"
+  },
+  "settings_tag_prefix": {
+    "message": "Префикс тегов"
+  },
+  "settings_tag_delimeter": {
+    "message": "Разделитель тегов"
+  },
+  "settings_word_delimeter": {
+    "message": "Разделитель слов"
+  },
+  "settings_lower_case": {
+    "message": "Теги в нижнем регистре"
+  },
+  "settings_change": {
+    "message": "Изменить",
+    "description": "Button name for changing shortkey"
+  },
+  "settings_hotkey": {
+    "message": "Горячая комбинация"
+  },
+  "settings_no_hotkey": {
+    "message": "Нет горячей комбинации"
+  },
+  "settings_button_title": {
+    "message": "Название кнопки на странице"
+  },
+  "settings_no_button": {
+    "message": "Нет кнопки"
+  },
+  "settings_add_to_context_menu": {
+    "message": "Добавить к контекстному меню"
+  },
+  "settings_copy_all_tags": {
+    "message": "Скопировать все теги"
+  },
+  "settings_copy_copyrights": {
+    "message": "Скопировать теги-копирайты"
+  },
+  "settings_ignored_tags": {
+    "message": "Замена тегов"
+  },
+  "settings_occupied_hotkey": {
+    "message": "Эта комбинация уже спользуется. Выберите другую."
+  },
+  "settings_db_fail": {
+    "message": "Не удалось загрузить или сохранить настройки!"
+  },
+  "settings_profile": {
+    "message": "Профиль"
+  },
+  "settings_none": {
+    "message": "Пусто",
+    "description": "For empty fields"
+  },
+  "settings_replace_tag": {
+    "message": "заменяемый тег"
+  },
+  "settings_substitute_tag": {
+    "message": "заменяющий тег"
+  },
+  "settings_copyrights_only": {
+    "message": "Только теги-копирайты"
+  },
+  "settings_delete_hotkey": {
+    "message": "Удалить горящию комбинацию"
+  },
+  "settings_confirm_hotkey_deleteing": {
+    "message": "Вы уверены, что хотите удалить эту горячую комбинацию?"
+  },
+  "settings_enter_profile_name": {
+    "message": "Введите название нового профиля"
+  },
+  "settings_profile_already_exsists": {
+    "message": "Профиль с таким именем уже существеут!"
+  },
+  "settings_confirm_profile_deleteing": {
+    "message": "Вы уверены, что хотите удалить этот профиль?"
+  },
+  "settings_ways_of_coping": {
+    "message": "Способы копирования"
+  },
+  "settings_copyLinkTitle": {
+    "message": "Добавить кнопку \"Копировать заголовок ссылки\" в контекстное меню"
+  }
+}

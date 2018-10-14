@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>__MSG_settings_title__</title>
+        <script src="js/jquery-2.1.4.min.js"></script>
+        <script src="js/readStorage.js"></script>
+        <script src="js/writeStorage.js"></script>
+        <script src="js/settings.js"></script>
+        <style type="text/css">
+            body {
+                width: 100%;
+                font-size: 16px;
+                margin:  10px 0;
+            }
+
+            input[type=text] {
+                width: 50px;
+            }
+
+            input.long {
+                width: initial;
+            }
+
+            button {
+                min-width: 30px;
+            }
+
+            table {
+                margin: 0 auto;
+                border-spacing: 20px 0;
+            }
+
+            #bg {
+                display: none;
+                position: fixed;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.75);
+                color: white;
+                z-index: 10;
+                left: 0;
+                top: 0;
+            }
+
+            #bg input {
+                display: none;
+            }
+
+            #key, #bg label span, select, button, input {
+                background: #888;
+                border-radius: 4px;
+                padding: 5px;
+                user-select: none;
+                margin: 3px;
+                color: black;
+            }
+
+            input[readonly] {
+                border-width: 0;
+            }
+
+            #bg select {
+                height: 31px;
+                position: relative;
+                top: -2px;
+            }
+
+            select, button, input, #key, #bg label input:checked + span {
+                background: #FFF;
+            }
+
+            span.checked, span.unchecked {
+                display: none;
+                background: #FFF !important;
+            }
+
+            input:checked ~ span.checked {
+                display: inline-block;
+            }
+
+            input:not(:checked) ~ span.unchecked {
+                display: inline-block;
+            }
+
+            select, button, label span {
+                cursor: pointer;
+            }
+            td {
+                height: 35px;
+            }
+        </style>
+    </head>
+    <body>
+        <style>
+            i:empty::after {
+                content: "__MSG_settings_none__";
+                color: grey;
+            }
+        </style>
+        <div id="bg">
+            <div>
+            </div>
+            <center>
+                <h2>__MSG_settings_chooser__</h2>
+                <label><input id="ctrl"  type="checkbox"/><span>Crtl</span></label> +
+                <label><input id="alt"   type="checkbox"/><span>Alt</span></label> +
+                <label><input id="shift" type="checkbox"/><span>Shift</span></label> +
+                <span id="key">A</span>
+                <p>
+                    <button id="ok">__MSG_ok__</button>
+                    <button id="cancel">__MSG_cancel__</button>
+                    <button id="deleteHotkey">__MSG_settings_delete_hotkey__</button>
+                </p>
+            </center>
+        </div>
+        <table>
+            <tr>
+                <td colspan="3">
+                    <center>
+                        <label><input id="copyLinkTitle" type="checkbox"/>__MSG_settings_copyLinkTitle__</label>
+                    </center>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <center>
+                        <h2>__MSG_settings_profile__</h2>
+                    </center>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <center>
+                        <button id="addProfile">+</button>
+                        <select id="profileNames"></select>
+                        <button id="removeProfile">-</button>
+                    </center>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <center><h2>__MSG_settings_tag_format__</h2></center>
+                </td>
+            </tr>
+            <tr>
+                <td>__MSG_settings_tag_prefix__:</td>
+                <td><input id="tagPrefix" type="text" placeholder="__MSG_settings_none__" /></td>
+                <td><!-- <button>__MSG_settings_change__</button> --></td>
+            </tr>
+            <tr>
+                <td>__MSG_settings_tag_delimeter__:</td>
+                <td><input id="tagDelimeter" type="text" placeholder="__MSG_settings_none__" /></td>
+                <td><!-- <button>__MSG_settings_change__</button> --></td>
+            </tr>
+            <tr>
+                <td>__MSG_settings_word_delimeter__:</td>
+                <td><input id="wordDelimeter" type="text" placeholder="__MSG_settings_none__" /></td>
+                <td><!-- <button>__MSG_settings_change__</button> --></td>
+            </tr>
+            <tr>
+                <td colspan="1">
+                    <label><input id="lowerCase" type="checkbox"/>__MSG_settings_lower_case__</label>
+                </td>
+                <td colspan="2">
+                    <label><input id="copyrightsOnly" type="checkbox"/>__MSG_settings_copyrights_only__</label>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <center>
+                        <h2>__MSG_settings_ways_of_coping__</h2>
+                    </center>
+                </td>
+            </tr>
+            <tr>
+                <td>__MSG_settings_hotkey__:</td>
+                <td><input id="hotkey" class="long" type="text" readonly placeholder="__MSG_settings_no_hotkey__" ></span></td>
+                <td><button id="changeHotkey">__MSG_settings_change__</button></td>
+            </tr>
+            <tr>
+                <td>__MSG_settings_button_title__</td>
+                <td>
+                    <input id="buttonName" class="long" type="text" placeholder="__MSG_settings_no_button__" maxlength="3" />
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="1">
+                    <label><input id="contextMenu" type="checkbox"/>__MSG_settings_add_to_context_menu__</label>
+                </td>
+            <tr>
+            </tr>
+                <td colspan="3">
+                    <center>
+                        <h2>__MSG_settings_ignored_tags__</h2>
+                    </center>
+                </td>
+            </tr>
+            <tr id="tagReplacing">
+                <td><input id="replaceableTag" class="long" placeholder="__MSG_settings_replace_tag__" /></td>
+                <td><input id="substituteTag" class="long" placeholder="__MSG_settings_substitute_tag__" /></td>
+                <td><button id="addTagReplacing">+</button></td>
+            </tr>
+        </table>
+    </body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>__MSG_settings_title__</title>
+        <script src="js/jquery-2.1.4.min.js"></script>
+        <script src="js/readStorage.js"></script>
+        <script src="js/writeStorage.js"></script>
+        <script src="js/popup.js"></script>
+        <style type="text/css">
+            body {
+                font-size: 14px;
+                margin: 10px;
+            }
+
+            select {
+                width: 104px;
+            }
+
+            .long {
+                width: 100px;
+            }
+
+            table tr:last-child {
+                visibility: hidden;
+            }
+            button {
+                width: 24px;
+            }
+
+            select, button, input {
+                background: #FFF;
+                border-radius: 4px;
+                border-width: 1px;
+                padding: 5px;
+                user-select: none;
+                margin: 3px;
+                color: black;
+            }
+
+            select:focus, button:focus, input:focus {
+                outline: none;
+            }
+
+            select, button {
+                cursor: pointer;
+            }
+        </style>
+    </head>
+    <body>
+        <style>
+            span:empty::after {
+                content: "__MSG_settings_none__";
+                color: grey;
+                font-style: italic;
+            }
+        </style>
+        <table>
+            <tr>
+                <td>__MSG_settings_profile__:</td>
+                <td colspan="2">
+                    <select id="profileNames"></select>
+                </td>
+            </tr>
+            <tr>
+                <td><input id="replaceableTag" class="long" placeholder="__MSG_settings_replace_tag__" /></td>
+                <td><input id="substituteTag" class="long" placeholder="__MSG_settings_substitute_tag__" /></td>
+                <td><button id="addTagReplacing">+</button></td>
+            </tr>
+            <tr>
+                <td><span id="replaceableTag2" class="long"></span></td>
+                <td><span id="substituteTag2" class="long"></span></td>
+                <td><button id="removeTag">-</button></td>
+            </tr>
+        </table>
+    </body>
+</html>

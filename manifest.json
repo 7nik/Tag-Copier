@@ -1,0 +1,65 @@
+{
+    "manifest_version": 2,
+    "name": "Tag Copier",
+    "description": "Allow to copy all or only copyright tags from some taggable image boards.",
+    "author": "7nik",
+    "version": "1.2.3.2",
+    "icons": {
+        "16": "img/icon_16.png",
+        "32": "img/icon_32.png",
+        "48": "img/icon_48.png",
+        "128": "img/icon_128.png"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "*://danbooru.donmai.us/posts/*",
+                "*://safebooru.donmai.us/posts/*",
+                "*://hijiribe.donmai.us/posts/*",
+                "*://sonohara.donmai.us/posts/*",
+                "*://testbooru.donmai.us/posts/*",
+                "*://chan.sankakucomplex.com/post/show/*",
+                "*://idol.sankakucomplex.com/post/show/*",
+                "*://konachan.com/post/show/*",
+                "*://konachan.net/post/show/*",
+                "*://yande.re/post/show/*",
+                "*://art.4otaku.org/*",
+                "*://anime-pictures.net/pictures/view_post/*",
+                "*://www.pixiv.net/*",
+                "*://gelbooru.com/*",
+                "*://e-shuushuu.net/image/*",
+                "*://www.zerochan.net/*",
+                "*://seiga.nicovideo.jp/seiga/*",
+                "*://safebooru.org/*",
+                "*://lolibooru.moe/post/show*",
+                "*://e621.net/post/show/*",
+                "*://e921.net/post/show/*"
+            ],
+            "js": [
+                "js/jquery-2.1.4.min.js",
+                "js/readStorage.js",
+                "js/content.js"
+            ],
+            "run_at": "document_start"
+        },
+        {
+            "matches": ["<all_urls>"],
+            "js": ["js/copy link title.js"],
+            "run_at": "document_start"
+        }
+    ],
+    "default_locale": "en",
+    "permissions": [ "storage", "contextMenus" ],
+    "options_page": "settings.html",
+    "browser_action": {
+        "default_popup": "popup.html"
+    },
+    "background": {
+        "scripts": [
+            "js/readStorage.js",
+            "js/writeStorage.js",
+            "js/background.js"
+        ],
+        "persistent": false
+    }
+}

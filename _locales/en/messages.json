@@ -1,0 +1,112 @@
+{
+  "copy_link_title": {
+    "message": "Copy link title"
+  },
+  "cancel": {
+    "message": "Cancel"
+  },
+  "ok": {
+    "message": "OK"
+  },
+  "content_msg_tags_copied": {
+    "message": "Tags copied as ",
+    "description": "Tags copied as <profile_name>"
+  },
+  "content_msg_nothing_copied": {
+    "message": "Nothing was copied as ",
+    "description": "Nothing was as <profile_name>"
+  },
+  "settings_title": {
+    "message": "Tag copier - settings",
+    "description": "Title of settings page"
+  },
+  "settings_chooser":{
+    "message": "Choose a new shortkey"
+  },
+  "settings_tag_format": {
+    "message": "Tag format"
+  },
+  "settings_tag_prefix": {
+    "message": "Prefix of tags"
+  },
+  "settings_tag_delimeter": {
+    "message": "Delimeter of tags"
+  },
+  "settings_word_delimeter": {
+    "message": "Delimeter of words"
+  },
+  "settings_lower_case": {
+    "message": "Tags in lower case"
+  },
+  "settings_change": {
+    "message": "Change",
+    "description": "Button name for changing shortkey"
+  },
+  "settings_hotkey": {
+    "message": "Hotkey"
+  },
+  "settings_no_hotkey": {
+    "message": "No hotkey"
+  },
+  "settings_button_title": {
+    "message": "Button title on a page"
+  },
+  "settings_no_button": {
+    "message": "No button"
+  },
+  "settings_add_to_context_menu": {
+    "message": "Add to the context menu"
+  },
+  "settings_copy_all_tags": {
+    "message": "Copy all tags"
+  },
+  "settings_copy_copyrights": {
+    "message": "Copy copyright tags"
+  },
+  "settings_ignored_tags": {
+    "message": "Tag replacing"
+  },
+  "settings_occupied_hotkey": {
+    "message": "The hotkey has already used. Choose another hotkey."
+  },
+  "settings_db_fail": {
+    "message": "Couldn't save of load settings!"
+  },
+  "settings_profile": {
+    "message": "Profile"
+  },
+  "settings_none": {
+    "message": "None",
+    "description": "For empty fields"
+  },
+  "settings_replace_tag": {
+    "message": "replaceable tag"
+  },
+  "settings_substitute_tag": {
+    "message": "substitutive tag"
+  },
+  "settings_copyrights_only": {
+    "message": "Copyright tags only"
+  },
+  "settings_delete_hotkey": {
+    "message": "Delete hotkey"
+  },
+  "settings_confirm_hotkey_deleteing": {
+    "message": "Are you sure want to delete this hotkey?"
+  },
+  "settings_enter_profile_name": {
+    "message": "Enter new profile name"
+  },
+  "settings_profile_already_exsists": {
+    "message": "Profile with this name already exists!"
+  },
+  "settings_confirm_profile_deleteing": {
+    "message": "Are you sure want to delete this profile?"
+  },
+  "settings_ways_of_coping": {
+    "message": "Ways of coping"
+  },
+  "settings_copyLinkTitle": {
+    "message": "Add button\"Copy link title\" to context menu"
+  }
+}
