@@ -38,6 +38,9 @@
   "settings_lower_case": {
     "message": "Теги в нижнем регистре"
   },
+  "settings_all_tags_otherwise": {
+    "message": "Копировать все теги если нет деления на типы"
+  },
   "settings_change": {
     "message": "Изменить",
     "description": "Button name for changing shortkey"

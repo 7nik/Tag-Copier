@@ -4,8 +4,8 @@
         <meta charset="UTF-8">
         <title>__MSG_settings_title__</title>
         <script src="js/jquery-2.1.4.min.js"></script>
-        <script src="js/readStorage.js"></script>
-        <script src="js/writeStorage.js"></script>
+        <script src="js/read-storage.js"></script>
+        <script src="js/write-storage.js"></script>
         <script src="js/settings.js"></script>
         <style type="text/css">
             body {
@@ -85,6 +85,9 @@
             input:not(:checked) ~ span.unchecked {
                 display: inline-block;
             }
+            input[disabled]+label {
+                color: grey;
+            }
 
             select, button, label span {
                 cursor: pointer;
@@ -96,8 +99,9 @@
     </head>
     <body>
         <style>
-            i:empty::after {
+            .tag td:empty::before {
                 content: "__MSG_settings_none__";
+                font-style: italic;
                 color: grey;
             }
         </style>
@@ -162,11 +166,17 @@
                 <td><!-- <button>__MSG_settings_change__</button> --></td>
             </tr>
             <tr>
-                <td colspan="1">
+                <td colspan="3">
                     <label><input id="lowerCase" type="checkbox"/>__MSG_settings_lower_case__</label>
                 </td>
-                <td colspan="2">
+            </tr>
+            <tr>
+                <td>
                     <label><input id="copyrightsOnly" type="checkbox"/>__MSG_settings_copyrights_only__</label>
+                </td>
+                <td colspan="2">
+                    <input id="allTagsOtherwise" type="checkbox"/>
+                    <label for="allTagsOtherwise">__MSG_settings_all_tags_otherwise__</label>
                 </td>
             </tr>
             <tr>

@@ -1,146 +1,182 @@
-/*jshint esversion: 6 */
+/* eslint-env webextensions */
+/* global db */
+/* eslint-disable no-alert, sonarjs/no-duplicate-string */
+
+"use strict";
 
 let settings = {};
-let elemsType = {
-    // t - text, k - hotkey, b - boolean (checked), n - number, o - object, a - array, "-" - special handler
-    tagPrefix:           't',
-    tagDelimeter:        't',
-    wordDelimeter:       't',
-    lowerCase:           'b',
-    copyrightsOnly:      'b',
-    buttonName:          't',
-    contextMenu:         'b',
-    hotkey:              't',
-    profileName:         '-',
+const elemsType = {
+    // t - text, k - hotkey, b - boolean, n - number,
+    // o - object, a - array, "-" - special handler
+    tagPrefix:           "t",
+    tagDelimeter:        "t",
+    wordDelimeter:       "t",
+    lowerCase:           "b",
+    copyrightsOnly:      "b",
+    allTagsOtherwise:    "b",
+    buttonName:          "t",
+    contextMenu:         "b",
+    hotkey:              "t",
+    profileName:         "-",
 
-    profileNames:        'a',
-    currentProfile:      '-',
-    tagReplacing:        'o',
-    copyLinkTitle:       'b',
+    profileNames:        "a",
+    currentProfileName:  "-",
+    tagReplacing:        "o",
+    copyLinkTitle:       "b",
 };
 
-db.logError = function (error) {
+const copyLinkTitlePermissions = {
+    permissions: ["tabs", "activeTab"],
+    origins: ["<all_urls>"],
+};
+
+db.logError = function logError2 (error) {
     alert(chrome.i18n.getMessage("settings_db_fail"));
     throw error;
 };
 
-function saveOptions(id, value) {
+function saveOptions (id, value) {
     switch (id) {
         case "copyLinkTitle":
-            chrome.runtime.sendMessage({
-                method:  value ? "enableLinkTitle" : "disableLinkTitle",
-            });
-        case "currentProfile":
-        case "profileNames":
-            if (settings[id] == value) return;
-            if (value === undefined) {
-                value = settings[id];
+            if (value === true) {
+                chrome.permissions.contains(copyLinkTitlePermissions, (has) => {
+                    if (has) {
+                        chrome.runtime.sendMessage({ method: "enableLinkTitle" });
+                        db.set(id, value);
+                    } else {
+                        chrome.permissions.request(copyLinkTitlePermissions, (granted) => {
+                            if (!granted) {
+                                setText(id, false);
+                                return;
+                            }
+                            chrome.runtime.sendMessage({ method: "enableLinkTitle" });
+                            db.set(id, value);
+                        });
+                    }
+                });
             } else {
-                settings[id] = value;
+                chrome.permissions.remove(copyLinkTitlePermissions);
+                chrome.runtime.sendMessage({ method: "disableLinkTitle" });
+                db.set(id, value);
             }
-            db.set(id, value).then(() => setText(id, value));
+            return;
+        case "currentProfileName":
+        case "profileNames":
+            if (settings[id] === value) return;
+            settings[id] = value;
+            db.set(id, value);
             break;
         case "tagReplacing":
-            db.getTagReplacing(settings.currentProfile, value || settings.tagReplacing);
-            break;
+            db.setTagReplacing(settings.currentProfileName, value || settings.tagReplacing);
+            return; // no calling of setText
         // profile's field
         case "contextMenu":
             chrome.runtime.sendMessage({
                 method:  value ? "showCopyTags" : "hideCopyTags",
-                title: settings.currentProfile,
-                copyrightsOnly: settings.profile.copyrightsOnly,
+                title: settings.currentProfileName,
+                copyrightsOnly: settings.currentProfile.copyrightsOnly,
             });
+        // fallthrough
         case "tagPrefix":
         case "tagDelimeter":
         case "wordDelimeter":
         case "lowerCase":
         case "copyrightsOnly":
+        case "allTagsOtherwise":
         case "buttonName":
         case "hotkey":
-            if (settings.profile[id] == value) return;
-            if (value === undefined) {
-                value = settings.profile[id];
-            } else {
-                settings.profile[id] = value;
-            }
-            db.setProfile(settings.currentProfile, settings.profile)
-                .then(() => setText(id, value));
+            if (settings.currentProfile[id] === value) return;
+            settings.currentProfile[id] = value;
+            db.setProfile(settings.currentProfileName, settings.currentProfile);
             break;
         default:
             console.error("Saving of unknown field:", id, value);
-            return;
     }
+    setText(id, value);
 }
 
-function restoreOptions() {
-    let options = {
+function restoreOptions () {
+    const options = {
         profileNames:       ["AP add"],
-        currentProfile:     "AP add",
-        copyLinkTitle:      true,
+        currentProfileName: "AP add",
+        copyLinkTitle:      false,
     };
     db.get(options)
         .then((items) => {
             settings = items;
-            for (let id in settings) setText(id, settings[id]);
-            $("#profileNames").val(settings.currentProfile);
+            Object.entries(settings).forEach(([id, value]) => setText(id, value));
+            $("#profileNames").val(settings.currentProfileName);
             loadProfile();
         });
 }
 
-function setText(id, value) {
+function setText (id, value) {
     const type = elemsType[id];
     switch (type) {
-        case 'b':
-            $("#"+id).prop("checked", value);
+        case "b":
+            $(`#${id}`).prop("checked", value);
+            if (id === "copyrightsOnly") {
+                $("#allTagsOtherwise").prop("disabled", !value);
+            }
             break;
-        case 't':
-        case 'n':
-            $("#"+id).val(value);
+        case "t":
+        case "n":
+            $(`#${id}`).val(value);
             break;
-        case 'o':
-            let html = Object.keys(value).map((k) => `<tr class="tag"><td>${k}</td><td>${value[k] || "<i></i>"}<br></td><td><button>-</button></td></tr>`).join("");
+        case "o": {
+            const html = Object
+                .keys(value)
+                .map((k) => `
+                    <tr class="tag">
+                        <td>${k}</td>
+                        <td>${value[k]}</td>
+                        <td><button>-</button></td>
+                    </tr>
+                `)
+                .join("");
             $(".tag").remove();
-            $("#"+id).after(html);
+            $(`#${id}`).after(html);
             $(".tag").find("button").click(removeTag);
             break;
-        case 'a':
-            $("#"+id).html(value.map((t) => `<option value="${t}">${t}</option>`).join(""));
+        }
+        case "a":
+            $(`#${id}`).html(value.map((v) => `<option value="${v}">${v}</option>`).join(""));
             break;
-        case '-': break;
+        case "-": break;
         default:
-            console.warn("Unknown type: ", id, type);
-            $("#"+id).text(value);
+            console.warn("Unknown type:", id, type);
     }
 }
 
-function onchange() {
-    let type = elemsType[this.id];
+function onchange () {
+    const type = elemsType[this.id];
     switch (type) {
-        case 'n': saveOptions(this.id, +$(this).val()); break;
-        case 'b': saveOptions(this.id, $(this).prop("checked")); break;
-        case 't': saveOptions(this.id, $(this).val()); break;
-        case 'k': break;
+        case "n": saveOptions(this.id, +$(this).val()); break;
+        case "b": saveOptions(this.id, $(this).prop("checked")); break;
+        case "t": saveOptions(this.id, $(this).val()); break;
+        case "k": break;
+        // no default
     }
 }
 
-function deleteHotKey(e) {
-    if (!confirm(chrome.i18n.getMessage("settings_confirm_hotkey_deleteing"))) return;
+function deleteHotKey () {
+    if (!window.confirm(chrome.i18n.getMessage("settings_confirm_hotkey_deleteing"))) return;
     saveOptions("hotkey", "");
     $("#cancel").click();
 }
 
-function showChooser() {
-    let hotkey = settings.profile.hotkey;
+function showChooser () {
+    const { hotkey } = settings.currentProfile;
     $(document).on("keydown", keypress);
     $("#bg").css("display", "flex");
-    $("#shift").prop("checked", (hotkey.indexOf("Shift+") >= 0) ? true : false);
-    $("#ctrl" ).prop("checked", (hotkey.indexOf("Ctrl+") >= 0) ? true : false);
-    $("#alt"  ).prop("checked", (hotkey.indexOf("Alt+") >= 0) ? true : false);
+    $("#shift").prop("checked", hotkey.includes("Shift+"));
+    $("#ctrl").prop("checked", hotkey.includes("Ctrl+"));
+    $("#alt").prop("checked", hotkey.includes("Alt+"));
     $("#key").text(hotkey.replace(/\w+\+/g, ""));
 }
 
-function hideChooser(e) {
-    if (!$(e.target).is("#bg,#ok,#cancel")) return;
+function hideChooser (ev) {
+    if (!$(ev.target).is("#bg,#ok,#cancel")) return;
     $(document).off("keydown", keypress);
     $("#bg").css("display", "none");
     if (this.id === "ok") {
@@ -154,105 +190,113 @@ function hideChooser(e) {
     }
 }
 
-function keypress(e) {
-    if (e.key === "Escape") {
+function keypress (ev) {
+    if (ev.key === "Escape") {
         $("#cancel").click();
-        return;
+        return true;
     }
-    if (event.ctrlKey) {
+    if (ev.ctrlKey) {
         $("#ctrl").click();
         return false;
     }
-    if (event.altKey) {
+    if (ev.altKey) {
         $("#alt").click();
-       return false;
+        return false;
     }
-    if (event.shiftKey) {
+    if (ev.shiftKey) {
         $("#shift").click();
-       return false;
+        return false;
     }
-    $("#key").text((e.key.length > 1) ? e.key : String.fromCharCode(e.which || e.keyCode));
+    $("#key").text((ev.key.length > 1) ? ev.key : String.fromCharCode(ev.which || ev.keyCode));
     return false;
 }
 
-function addTagReplacing() {
+function addTagReplacing () {
     settings.tagReplacing[$("#replaceableTag").val()] = $("#substituteTag").val();
     saveOptions("tagReplacing");
     $("#replaceableTag, #substituteTag").val("");
 }
 
-function removeTag() {
-    let tagName = $(this).closest("tr").find("td").eq(0).text();
+function removeTag () {
+    const tagName = $(this).closest("tr").find("td:eq(0)").text();
     delete settings.tagReplacing[tagName];
     $(this).closest("tr").remove();
     saveOptions("tagReplacing");
 }
 
-function loadProfile() {
-    saveOptions("currentProfile", $("#profileNames").val());
-    db.getProfile(settings.currentProfile)
-        .then(p => { for (let id in settings.profile = p) setText(id, p[id]); });
-    db.getTagReplacing(settings.currentProfile)
-        .then(tr => setText("tagReplacing", settings.tagReplacing = tr));
+function loadProfile () {
+    saveOptions("currentProfileName", $("#profileNames").val());
+    db.getProfile(settings.currentProfileName)
+        .then((profile) => {
+            settings.currentProfile = profile;
+            Object.entries(profile).forEach(([id, value]) => setText(id, value));
+        });
+    db.getTagReplacing(settings.currentProfileName)
+        .then((data) => {
+            settings.tagReplacing = data;
+            setText("tagReplacing", data);
+        });
 }
 
-function addProfile() {
-    const profileName = prompt(chrome.i18n.getMessage("settings_enter_profile_name"), "new profile");
+function addProfile () {
+    const profileName = prompt(chrome.i18n.getMessage("settings_enter_profile_name"), "my profile");
     if (profileName === null) return;
-    if (settings.profileNames.indexOf(profileName) >= 0) {
+    if (settings.profileNames.includes(profileName)) {
         alert(chrome.i18n.getMessage("settings_profile_already_exsists"));
         return;
     }
 
     settings.profileNames.push(profileName);
-    settings.currentProfile = profileName;
-    settings.profile.profileName = profileName;
-    let options = {
+    settings.currentProfileName = profileName;
+    settings.currentProfile.profileName = profileName;
+    const options = {
         profileNames: settings.profileNames,
-        currentProfile: profileName,
+        currentProfileName: profileName,
     };
     db.set(options);
-    db.setProfile(profileName, settings.profile);
-    db.setBO("tagReplacing:"+settings.currentProfile, settings.tagReplacing);
-    if (settings.profile.contextMenu) {
-        chrome.runtime.sendMessage({method: "showCopyTags", title: settings.currentProfile});
+    db.setProfile(profileName, settings.currentProfile);
+    db.setBO(`tagReplacing:${settings.currentProfileName}`, settings.tagReplacing);
+    if (settings.currentProfile.contextMenu) {
+        chrome.runtime.sendMessage({ method: "showCopyTags", title: settings.currentProfileName });
     }
 
-    $("#profileNames").append(`<option value="${profileName}">${profileName}</option>`).val(profileName);
+    $("#profileNames")
+        .append(`<option value="${profileName}">${profileName}</option>`)
+        .val(profileName);
 }
 
-function removeProfile() {
-    if (!confirm(chrome.i18n.getMessage("settings_confirm_profile_deleteing"))) return;
-    let pn = settings.currentProfile;
-    settings.profileNames = settings.profileNames.filter((p) => p !== pn);
-    db.removeProfile(pn);
-    chrome.runtime.sendMessage({method: "hideCopyTags", title: pn});
-    $(`#profileNames option[value="${pn}"`).remove();
+function removeProfile () {
+    if (!window.confirm(chrome.i18n.getMessage("settings_confirm_profile_deleteing"))) return;
+    const profileName = settings.currentProfileName;
+    settings.profileNames = settings.profileNames.filter((pname) => pname !== profileName);
+    db.removeProfile(profileName);
+    chrome.runtime.sendMessage({ method: "hideCopyTags", title: profileName });
+    $(`#profileNames option[value="${profileName}"`).remove();
 
     loadProfile();
 }
 
-function localizeHtmlPage() {
+function localizeHtmlPage () {
     document.title = chrome.i18n.getMessage("settings_title") || document.title;
-    //Localize by replacing __MSG_***__ meta tags
-    let page = $("body");
-    let original = page.html();
-    let localized = original.replace(/__MSG_(\w+)__/g, function(match, msg) {
-        return msg ? chrome.i18n.getMessage(msg) : "";
-    });
+    // Localize by replacing __MSG_***__ meta tags
+    const page = $("body");
+    const original = page.html();
+    const localized = original.replace(
+        /__MSG_(\w+)__/g,
+        (match, msg) => (msg ? chrome.i18n.getMessage(msg) : ""),
+    );
     if (original !== localized) {
         page.html(localized);
     }
 }
 
-$(document).ready(function () {
+$(document).ready(() => {
     localizeHtmlPage();
     restoreOptions();
-    for (let elem in elemsType) {
-        if (elemsType[elem] !== 'k') {
-            $("#" + elem).on("change input", onchange);
-        }
-    }
+    Object.entries(elemsType).forEach(([elem, type]) => {
+        if (type === "k") return;
+        $(`#${elem}`).on("change", onchange);
+    });
     $("#changeHotkey").on("click", showChooser);
     $("#bg, #ok, #cancel").on("click", hideChooser);
     $("#addTagReplacing").on("click", addTagReplacing);
@@ -260,5 +304,7 @@ $(document).ready(function () {
     $("#addProfile").on("click", addProfile);
     $("#removeProfile").on("click", removeProfile);
     $("#deleteHotkey").on("click", deleteHotKey);
-    $("#replaceableTag, #substituteTag").on("keypress", (e) => (e.originalEvent.key === "Enter") && addTagReplacing() || true);
+    $("#replaceableTag, #substituteTag").on("keypress", (ev) => {
+        if (ev.originalEvent.key === "Enter") addTagReplacing();
+    });
 });

@@ -36,7 +36,10 @@
     "message": "Delimeter of words"
   },
   "settings_lower_case": {
-    "message": "Tags in lower case"
+    "message": "Tags to lower case"
+  },
+  "settings_all_tags_otherwise": {
+    "message": "Copy all tags if no tag type support"
   },
   "settings_change": {
     "message": "Change",
@@ -107,6 +110,6 @@
     "message": "Ways of coping"
   },
   "settings_copyLinkTitle": {
-    "message": "Add button\"Copy link title\" to context menu"
+    "message": "Add button \"Copy link title\" to context menu"
   }
 }
