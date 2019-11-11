@@ -101,14 +101,14 @@ async function addButtons (options) {
     await dbready;
     let buttons = profiles.filter((p) => p.buttonName);
     if (options.fullOnly) {
-        buttons = buttons.filter((p) => !p.copyrightsOnly);
+        buttons = buttons.filter((p) => !p.copyrightsOnly || p.allTagsOtherwise);
     }
     if (options.reversed) {
         buttons.reverse();
     }
     /* eslint-disable max-len */
     let $buttons = $(buttons.map((p) => $(`
-        <svg profile="${p.profileName}" copyrightsonly="${p.copyrightsOnly}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" id="icon_all_tags">
+        <svg profile="${p.profileName}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
             <path d="M 0 320 Q 0 192 128 192 h 576 Q 832 192 832 320 v 576 Q 832 1024 704 1024 h -576 Q 0 1024 0 896 v -576 h 64 v 576 Q 64 960 128 960 h 576 Q 768 960 768 896 v -576 Q 768 256 704 256 h -576 Q 64 256 64 320 Z"></path>
             <path d="M 192 128 Q 192 0 320 0 h 576 Q 1024 0 1024 128 v 576 Q 1024 832 896 832 v -64 Q 960 768 960 704 v -576 Q 960 64 896 64 h -576 Q 256 64 256 128 Z"></path>
             <text x="416" y="680" style="alignment-baseline: middle; text-anchor: middle; font: ${1280 / (p.buttonName.length + 1)}px Arial; ">${p.buttonName}</text>
