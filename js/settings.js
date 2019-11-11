@@ -36,6 +36,7 @@ db.logError = function logError2 (error) {
 };
 
 function saveOptions (id, value) {
+    let method;
     switch (id) {
         case "copyLinkTitle":
             if (value === true) {
@@ -72,18 +73,25 @@ function saveOptions (id, value) {
             return;
         // profile's field
         case "contextMenu":
-            chrome.runtime.sendMessage({
-                method:  value ? "showCopyTags" : "hideCopyTags",
-                title: settings.currentProfileName,
-                copyrightsOnly: settings.currentProfile.copyrightsOnly,
-            });
+            method = value ? "showCopyTags" : "hideCopyTags";
         // fallthrough
+        case "copyrightsOnly":
+        case "allTagsOtherwise": {
+            if (!method) method = "updateCopyTags";
+            settings.currentProfile[id] = value;
+            const { copyrightsOnly, allTagsOtherwise } = settings.currentProfile;
+            chrome.runtime.sendMessage({
+                method,
+                title: settings.currentProfileName,
+                copyrightsOnly: copyrightsOnly && !allTagsOtherwise,
+            });
+            db.setProfile(settings.currentProfileName, settings.currentProfile);
+            break;
+        }
         case "tagPrefix":
         case "tagDelimeter":
         case "wordDelimeter":
         case "lowerCase":
-        case "copyrightsOnly":
-        case "allTagsOtherwise":
         case "buttonName":
         case "hotkey":
             if (settings.currentProfile[id] === value) return;

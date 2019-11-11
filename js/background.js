@@ -213,6 +213,14 @@ function hideCopyTags (id) {
     chrome.contextMenus.remove(id, () => { menu[id] = false; });
 }
 
+function updateCopyTags (id, copyrightsOnly) {
+    if (!menu[id]) return;
+    chrome.contextMenus.update(
+        id,
+        { documentUrlPatterns: copyrightsOnly ? copyrightLinks : allLinks },
+    );
+}
+
 chrome.contextMenus.onClicked.addListener((info, tab) => (
     (info.menuItemId === "copyLinkTitle")
         ? chrome.tabs.sendMessage(tab.id, { method: "copyLinkTitle" })
@@ -245,6 +253,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         case "hideCopyTags":
             hideCopyTags(request.title);
+            break;
+
+        case "updateCopyTags":
+            updateCopyTags(request.title, request.copyrightsOnly);
             break;
 
         case "isLinkTitleEnabled":
@@ -304,8 +316,8 @@ db.get({ profileNames: [], copyLinkTitle: false })
             enableLinkTitle();
         }
         items.profileNames.forEach((profileName) => {
-            db.getProfile(profileName).then(({ contextMenu, copyrightsOnly }) => {
-                if (contextMenu) showCopyTags(profileName, copyrightsOnly);
+            db.getProfile(profileName).then(({ contextMenu, copyrightsOnly, allTagsOtherwise }) => {
+                if (contextMenu) showCopyTags(profileName, copyrightsOnly && !allTagsOtherwise);
             });
         });
     });
