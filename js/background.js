@@ -213,6 +213,12 @@ function hideCopyTags (id) {
     chrome.contextMenus.remove(id, () => { menu[id] = false; });
 }
 
+/**
+ * Update list of URLs of existing button in the context menu
+ * @param {string} id - name of the profile
+ * @param {object} copyrightsOnly - if true doesn't
+ * show the button on page that have not types of tags
+ */
 function updateCopyTags (id, copyrightsOnly) {
     if (!menu[id]) return;
     chrome.contextMenus.update(
