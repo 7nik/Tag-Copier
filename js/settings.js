@@ -68,7 +68,8 @@ function saveOptions (id, value) {
             break;
         case "tagReplacing":
             db.setTagReplacing(settings.currentProfileName, value || settings.tagReplacing);
-            return; // no calling of setText
+            setText(id, value || settings.tagReplacing);
+            return;
         // profile's field
         case "contextMenu":
             chrome.runtime.sendMessage({
