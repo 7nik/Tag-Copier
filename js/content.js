@@ -60,15 +60,15 @@ function showMsg (msg) {
         <center style="
             position: fixed;
             top: 49%;
-            left: 45%;"
+            left: 45%;
+            z-index: 1;"
         >
             <h3 style="
                 background: rgba(0,0,0,0.7);
                 color: white;
                 margin: 0;
                 padding: 3px 10px 5px 10px;
-                box-shadow: 0 0 5px 5px rgba(0,0,0,0.7); */
-                z-index: 1;"
+                box-shadow: 0 0 5px 5px rgba(0,0,0,0.7);"
             >
                 ${msg}
             </h3>
