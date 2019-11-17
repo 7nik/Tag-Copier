@@ -8,38 +8,36 @@
 
     let linkTitle = "";
 
-    function copyLinkTitle (event) {
-        event.clipboardData.setData("text/plain", linkTitle);
-        event.preventDefault();
-    }
+    document.addEventListener("mousedown", (event) => {
+        if (event.button !== 2) return; // was pressed non-right button
+        // find an ancor
+        let { target } = event;
+        while (target !== document) {
+            if (["A", "AREA"].includes(target.nodeName)) break;
+            target = target.parentNode;
+        }
+        if (target === document) return; // target isn't <a> (link)
 
-    chrome.runtime.sendMessage({ method: "isLinkTitleEnabled" }, (response) => {
-        if (response.enabled === false) return;
+        linkTitle = (target.text || target.title || target.alt || "").trim();
 
-        document.addEventListener("mousedown", (event) => {
-            if (event.button !== 2) return; // was pressed non-right button
-            // find an ancor
-            let { target } = event;
-            while (target !== document) {
-                if (["A", "AREA"].includes(target.nodeName)) break;
-                target = target.parentNode;
-            }
-            if (target === document) return; // target isn't ancor (link)
+        chrome.runtime.sendMessage({ method: (linkTitle ? "showLinkTitle" : "hideLinkTitle") });
+    });
 
-            linkTitle = (target.text || target.title || target.alt || "").trim();
-
-            chrome.runtime.sendMessage({ method: (linkTitle ? "showLinkTitle" : "hideLinkTitle") });
-        });
-
-        chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-            switch (request.method) {
-                case "copyLinkTitle":
-                    document.addEventListener("copy", copyLinkTitle, { once: true });
-                    document.execCommand("Copy", false, null);
-                    break;
-                case "copyTags": break;
-                default: console.error("Unknown method, request:", request);
-            }
-        });
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+        switch (request.method) {
+            case "copyLinkTitle":
+                document.addEventListener(
+                    "copy",
+                    (event) => {
+                        event.clipboardData.setData("text/plain", linkTitle);
+                        event.preventDefault();
+                    },
+                    { once: true },
+                );
+                document.execCommand("copy", false, null);
+                break;
+            case "copyTags": break; // for content.js
+            default: console.error("Unknown method, request:", request);
+        }
     });
 }());
