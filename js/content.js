@@ -381,7 +381,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             copyTags(request.profile);
             showMsg(chrome.i18n.getMessage("content_msg_all_tags_copied") + request.profile);
             break;
-        case "copyLinkTitle": break;
+        case "copyLinkTitle": break; // for copy link title.js
         default: console.error("Unknown method, request:", request);
     }
 });

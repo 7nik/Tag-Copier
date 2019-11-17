@@ -117,6 +117,9 @@ const menu = {
     copyLinkTitle: "disabled",
 };
 
+/**
+ * Listner for inserting the "copy link title.js" into a tab
+ */
 function insertLinkTitle (tabId, changeInfo, tab) {
     if (changeInfo.status !== "loading" || !tab.url.startsWith("http")) return;
     chrome.tabs.executeScript(
@@ -263,10 +266,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         case "updateCopyTags":
             updateCopyTags(request.title, request.copyrightsOnly);
-            break;
-
-        case "isLinkTitleEnabled":
-            sendResponse({ enabled: (menu.copyLinkTitle !== "disabled") });
             break;
 
         default: console.error("Unknown method, request:", request);
