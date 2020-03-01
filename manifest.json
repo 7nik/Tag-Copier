@@ -66,5 +66,10 @@
             "js/background.js"
         ],
         "persistent": true
+    },
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "{9b740bd1-df6c-4312-b64d-90a5a7819ebd}"
+        }
     }
 }
