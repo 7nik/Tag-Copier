@@ -117,6 +117,8 @@ const menu = {
     copyLinkTitle: "disabled",
 };
 
+let linkTitle = "";
+
 /**
  * Listner for inserting the "copy link title.js" into a tab
  */
@@ -133,7 +135,6 @@ function insertLinkTitle (tabId, changeInfo, tab) {
  * Create the button to the context menu to copy title of the link
  */
 function enableLinkTitle () {
-    console.trace();
     chrome.permissions.contains(copyLinkTitlePermissions, (has) => {
         if (!has) return;
         menu.copyLinkTitle = false;
@@ -230,16 +231,24 @@ function updateCopyTags (id, copyrightsOnly) {
     );
 }
 
-chrome.contextMenus.onClicked.addListener((info, tab) => (
-    (info.menuItemId === "copyLinkTitle")
-        ? chrome.tabs.sendMessage(tab.id, { method: "copyLinkTitle" })
-        : chrome.tabs.sendMessage(tab.id, { method: "copyTags", profile: info.menuItemId })
-));
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+    if (info.menuItemId === "copyLinkTitle") {
+        if (navigator.userAgent.includes("Firefox")) {
+            navigator.clipboard.writeText(linkTitle || "")
+                .catch((err) => console.error("Failed to copy text", linkTitle, err));
+        } else {
+            chrome.tabs.sendMessage(tab.id, { method: "copyLinkTitle" });
+        }
+    } else {
+        chrome.tabs.sendMessage(tab.id, { method: "copyTags", profile: info.menuItemId });
+    }
+});
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (request.method) {
         case "showLinkTitle":
             showLinkTitle();
+            linkTitle = request.linkTitle;
             break;
 
         case "hideLinkTitle":
@@ -266,6 +275,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         case "updateCopyTags":
             updateCopyTags(request.title, request.copyrightsOnly);
+            break;
+
+        case "textToClipboard":
+            navigator.clipboard.writeText(request.text || "")
+                .catch((err) => console.error("Failed to copy text", request.text, err));
             break;
 
         default: console.error("Unknown method, request:", request);

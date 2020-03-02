@@ -20,21 +20,26 @@
 
         linkTitle = (target.text || target.title || target.alt || "").trim();
 
-        chrome.runtime.sendMessage({ method: (linkTitle ? "showLinkTitle" : "hideLinkTitle") });
+        chrome.runtime.sendMessage({ method: (linkTitle ? "showLinkTitle" : "hideLinkTitle"), linkTitle });
     });
 
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         switch (request.method) {
             case "copyLinkTitle":
-                document.addEventListener(
-                    "copy",
-                    (event) => {
-                        event.clipboardData.setData("text/plain", linkTitle);
-                        event.preventDefault();
-                    },
-                    { once: true },
-                );
-                document.execCommand("copy", false, null);
+                // chrome only solution
+                // document.addEventListener(
+                //     "copy",
+                //     (event) => {
+                //         event.clipboardData.setData("text/plain", linkTitle);
+                //         event.preventDefault();
+                //     },
+                //     { once: true },
+                // );
+                // document.execCommand("copy", false, null);
+
+                // can be call only in context script
+                navigator.clipboard.writeText(linkTitle)
+                    .catch((err) => console.error("Failed to copy text", linkTitle, err));
                 break;
             case "copyTags": break; // for content.js
             default: console.error("Unknown method, request:", request);

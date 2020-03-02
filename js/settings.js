@@ -40,11 +40,12 @@ function saveOptions (id, value) {
     switch (id) {
         case "copyLinkTitle":
             if (value === true) {
-                chrome.permissions.contains(copyLinkTitlePermissions, (has) => {
-                    if (has) {
-                        chrome.runtime.sendMessage({ method: "enableLinkTitle" });
-                        db.set(id, value);
-                    } else {
+                // calling of chrome.permissions.contains makes FF think it isn't a user input handler?
+                // chrome.permissions.contains(copyLinkTitlePermissions, (has) => {
+                //     if (has) {
+                //         chrome.runtime.sendMessage({ method: "enableLinkTitle" });
+                //         db.set(id, value);
+                //     } else {
                         chrome.permissions.request(copyLinkTitlePermissions, (granted) => {
                             if (!granted) {
                                 setText(id, false);
@@ -53,8 +54,8 @@ function saveOptions (id, value) {
                             chrome.runtime.sendMessage({ method: "enableLinkTitle" });
                             db.set(id, value);
                         });
-                    }
-                });
+                //     }
+                // });
             } else {
                 chrome.permissions.remove(copyLinkTitlePermissions);
                 chrome.runtime.sendMessage({ method: "disableLinkTitle" });

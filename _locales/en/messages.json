@@ -83,10 +83,10 @@
     "description": "For empty fields"
   },
   "settings_replace_tag": {
-    "message": "replaceable tag"
+    "message": "tag to replace"
   },
   "settings_substitute_tag": {
-    "message": "substitutive tag"
+    "message": "tag to substitute"
   },
   "settings_copyrights_only": {
     "message": "Copyright tags only"
