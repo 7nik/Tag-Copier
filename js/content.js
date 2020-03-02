@@ -190,7 +190,7 @@ $(document).ready(() => {
         case "testbooru.donmai.us":
             queries = [
                 "#tag-list a.search-tag",
-                "#tag-list li:not(.category-0):not(.category-5) a.search-tag",
+                "#tag-list li:not(.tag-type-0):not(.tag-type-5) a.search-tag",
             ];
             addButtons({
                 container: "#tag-list",
