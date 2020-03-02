@@ -25,7 +25,7 @@ db.set = function dbSet (fields, value) {
  */
 db.setBO = function dbSetBO (key, value) {
     const fields = {};
-    const limit = this.storage.QUOTA_BYTES_PER_ITEM - key.length - 25;
+    const limit = (this.storage.QUOTA_BYTES_PER_ITEM || 4096) - key.length - 25;
     let json = JSON.stringify(value);
     let len = limit;
     let i = 0;

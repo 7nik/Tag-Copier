@@ -3,7 +3,7 @@
     "name": "Tag Copier",
     "description": "Allow to copy all or only copyright tags from some taggable image boards.",
     "author": "7nik",
-    "version": "1.4.0",
+    "version": "1.4.1",
     "icons": {
         "16": "img/icon_16.png",
         "32": "img/icon_32.png",
@@ -67,7 +67,8 @@
     },
     "browser_specific_settings": {
         "gecko": {
-            "id": "{9b740bd1-df6c-4312-b64d-90a5a7819ebd}"
+            "id": "{9b740bd1-df6c-4312-b64d-90a5a7819ebd}",
+            "strict_min_version": "48.0"
         }
     }
 }
